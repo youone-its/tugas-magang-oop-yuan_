@@ -1,0 +1,18 @@
+Nama    : qqq
+NRP     : 111
+TO1     : 111
+TO2     : 111
+TO3     : 111
+Kampus  : UI
+Jurusan : KEDOKTERAN
+Lulus   : 11.1 %
+-------------------------
+Nama    : ddd
+NRP     : 222
+TO1     : 222
+TO2     : 222
+TO3     : 222
+Kampus  : xx
+Jurusan : xx
+Lulus   : 0 %
+-------------------------
