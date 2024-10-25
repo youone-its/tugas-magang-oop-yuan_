@@ -4,6 +4,7 @@ typedef long long ll;
 void masuk();
 void modifikasi();
 void apus();
+
 class siswa{
     public:
         string Nama,Kampus,Jurusan;
@@ -17,6 +18,7 @@ class siswa{
             TryOut3 = to3;
             Kampus = univ;
             Jurusan = jurusan;
+            Lulus = 0.0;
         }
 
         void display(){
@@ -27,12 +29,11 @@ class siswa{
             cout << "TO3    : " << TryOut3 << endl;
             cout << "Kampus : " << Kampus << endl;
             cout<< "Jurusan : " << Jurusan << endl;
-            cout << "Lulus  : " << Lulus << "%" << endl;
+            cout << "Lulus  : " << (isnan(Lulus) ? 0.0 : Lulus) << "%" << endl;
             cout << "-------------------------" << endl;
         }
 };
 vector<siswa>data;
-
 void irt(siswa& sis) {
     double a = (sis.TryOut1 + sis.TryOut2 + sis.TryOut3) / 3.0;
     if (sis.Kampus == "ITS" && sis.Jurusan == "TEKNOLOGI INFORMASI") {
@@ -57,22 +58,27 @@ void irt(siswa& sis) {
         sis.Lulus = a / 550 * 60;
     }
 }
+
 bool cekNRP(ll np) {
     for (const auto& d : data) {
         if (d.NRP == np) {
-            return false; // NRP sudah ada
+            return false;
         }
     }
-    return true; // NRP belum ada
+    return true;
 }
 void masuk(){
+    for(auto& d : data){
+        d.display();
+    }
     string nama, kampus,jurusan;
     ll NP,TO1,TO2,TO3;
     int n;
     bool valid = false;
-    cout<<"Masukkan 1 untuk lanjut memasukkan data\nMasukkan 0 untuk selesai memasukkan data\nInput = ";
-    cin>>n;
+    
     while(!valid){
+        cout<<"Masukkan 1 untuk lanjut memasukkan data\nMasukkan 0 untuk selesai memasukkan data\nInput = ";
+        cin>>n;
         if(n==1){
             valid = true;
             cout << "Masukkan Nama: ";
@@ -105,40 +111,7 @@ void masuk(){
             return;
         }else if(n==0){
             valid = true;
-            bool valdi=false;
-            while(!valdi){
-                cout<<"Apakah ingin lanjut ke sesi selanjutnya?\n Masukkan 10 untuk memasukkan data\nMasukkan 11 untuk memodifikasi data\nMasukkan 12 untuk menghapus data\nMasukkan 13 untuk menyelesaikan sesi\nInput = ";
-                cin>>n;
-                switch(n){
-                    case 10:{
-                        for(auto& d : data){
-                            d.display();
-                        }
-                        masuk();
-                        return;
-                    }case 11:{
-                        valdi = true;
-                        for(auto& d : data){
-                            d.display();
-                        }
-                        modifikasi();
-                        return;
-                    }case 12:{
-                        valdi = true;
-                        for(auto& d : data){
-                            d.display();
-                        }
-                        apus();
-                        return;
-                    }case 13:{
-                        valdi = true;
-                        return;
-                    }default:{
-                        cout<<"Opsi tidak valid"<<endl;
-                        break;
-                    }
-                }
-            }
+            return;
         }else{
             valid=false;
             cout<<"Input tidak valid, coba lagi"<<endl;
@@ -153,7 +126,9 @@ void modifikasi() {
         masuk();
         return;
     }
-
+    for(auto& d : data){
+        d.display();
+    }
     ll np;
     cout << "Masukkan NRP siswa yang ingin diganti = ";
     cin >> np;
@@ -185,10 +160,21 @@ void modifikasi() {
                         cout<<"Data Berhasil Diubah"<<endl;
                         break;
                     }
-                    case 2:{
-                        cout<<"Masukkan NRP = ";
-                        cin>>d.NRP;
-                        cout<<"Data Berhasil Diubah"<<endl;
+                    case 2: {
+                        ll nrpLama = d.NRP;
+                        ll nrpBaru;
+                        while (true) {
+                            cout<<"Masukkan NP baru: ";
+                            cin>>nrpBaru;
+                            
+                            if (nrpBaru!=nrpLama && !cekNRP(nrpBaru)) {
+                                cout << "NRP sudah pernah diinput, coba lagi dengan NRP yang berbeda." << endl;
+                            } else {
+                                d.NRP = nrpBaru;
+                                cout << "Data Berhasil Diubah" << endl;
+                                break;
+                            }
+                        }
                         break;
                     }
                     case 3:{
@@ -230,7 +216,7 @@ void modifikasi() {
                     }
                     case 8:{
                         cout<<"Selesai memodifikasi data"<<endl;
-                        goto nextstep;
+                        return;
                     }
                     default:{
                         cout<<"Pilihan Tidak Valid"<<endl;
@@ -248,151 +234,64 @@ void modifikasi() {
         if(hhh=="***"){
             modifikasi();
         }else if(hhh=="###"){
-            goto nextstep;
+            return;
         }
         
     }
-
-nextstep:
-    bool valdi=false;
-    while (!valdi){
-        cout<<"Apakah ingin lanjut ke sesi selanjutnya?\n Masukkan 10 untuk memasukkan data\nMasukkan 11 untuk memodifikasi data\nMasukkan 12 untuk menghapus data\nMasukkan 13 untuk menyelesaikan sesi\nInput = ";
-        cin>>np;
-        switch (np){
-            case 10:{
-                valdi=true;
-                masuk();
-                return;
-            }
-            case 11:{
-                valdi=true;
-                modifikasi();
-                return;
-            }
-            case 12:{
-                valdi=true;
-                apus();
-                return;
-            }
-            case 13:{
-                valdi=true;
-                return;
-            }
-            default:{
-                valdi=false;
-                cout<<"Opsi tidak valid"<<endl;
-                break;
-            }
-        }
-    }
 }
-void apus(){
-    if(data.empty()){
-        cout<<"Anda belum memasukkan data, silahkan input beberapa data terlebih dahulu"<<endl;
+void apus() {
+    if(data.empty()) {
+        cout << "Anda belum memasukkan data, silahkan input beberapa data terlebih dahulu" << endl;
         masuk();
         return;
     }
+    
+    for(auto& d : data) {
+        d.display();
+    }
+
     string nama;
     ll nrp;
     int n;
     bool ada = false;
-    cout<<"Masukkan nama dan nrp yang akan diapus"<<endl<<"Nama = ";
-    cin>>nama;cout<<"NRP = ";cin>>nrp;cout<<endl;
+    cout << "Masukkan nama dan NRP yang akan dihapus" << endl;
+    cout << "Nama = "; cin >> nama; cout << "NRP = "; cin >> nrp; cout << endl;
 
-    for(auto d = data.begin();d!=data.end();++d){
-        if(d->Nama==nama && d->NRP==nrp){
+    for(auto d = data.begin(); d != data.end(); ++d) {
+        if(d->Nama == nama && d->NRP == nrp) {
             data.erase(d);
-            cout<<"Data siswa atas nama "<<nama<<" dan dengan NRP "<<nrp<<" berhasil dihapus"<<endl;
+            cout << "Data siswa atas nama " << nama << " dan dengan NRP " << nrp << " berhasil dihapus" << endl;
             ada = true;
             break;
         }
     }
 
+    if(!ada) {
+        cout << "Data siswa atas nama " << nama << " dan dengan NRP " << nrp << " tidak ditemukan" << endl;
+    }
 
-    if(!ada){
-        cout<<"Data siswa atas nama "<<nama<<" dan dengan NRP "<<nrp<<" tidak ditemukan"<<endl;
-        cout<<endl<<"Masukkan satu di antara opsi berikut\n1 = Coba lagi\n2 = Kembali ke menu utama\nInput pilihan = ";
-        cin>>n;
-        switch(n){
-            case 1:{
+    while(true) {
+        cout << endl << "Masukkan satu di antara opsi berikut\n1 = Coba lagi\n2 = Kembali ke menu utama\nInput pilihan = ";
+        cin >> n;
+        
+        switch(n) {
+            case 1: {
                 apus();
                 return;
             }
-            case 2:{
-                bool valdi=false;
-                    while(!valdi){
-                        cout<<"Apakah ingin lanjut ke sesi selanjutnya?\nMasukkan 10 untuk memasukkan data\nMasukkan 11 untuk memodifikasi data\nMasukkan 12 untuk menghapus data\nMasukkan 13 untuk mengakhiri sesi\nInput = ";
-                        switch(n){
-                            case 10:{
-                                valdi = true;
-                                for(auto& d : data){
-                                    d.display();
-                                }
-                                masuk();
-                                break;
-                            }case 11:{
-                                valdi = true;
-                                for(auto& d : data){
-                                    d.display();
-                                }
-                                modifikasi();
-                                break;
-                            }case 12:{
-                                valdi = true;
-                                for(auto& d : data){
-                                    d.display();
-                                }
-                                apus();
-                                break;
-                            }default:{
-                                valdi = false;
-                                cout<<"Opsi tidak valid"<<endl;
-                                break;
-                            }
-                        }
-                    }
+            case 2: {
+                return;
             }
-        }
-
-    }else{
-        cout<<endl<<"Masukkan satu di antara opsi berikut\n1 = Coba lagi\n2 = Kembali ke menu utama\nInput pilihan = ";
-        cin>>n;
-        switch(n){
-            case 1:{
-                apus();
+            default: {
+                cout << "Opsi tidak valid, silakan coba lagi." << endl;
                 break;
-            }
-            case 2:{
-                bool valdi=false;
-                    while(!valdi){
-                        cout<<"Apakah ingin lanjut ke sesi selanjutnya?\n Masukkan 10 untuk memasukkan data\nMasukkan 11 untuk memodifikasi data\nMasukkan 12 untuk menghapus data\nMasukkan 13 untuk mengakhiri sesi\nInput = ";
-                        switch(n){
-                            case 10:{
-                                valdi = true;
-                                masuk();
-                                break;
-                            }case 11:{
-                                valdi = true;
-                                modifikasi();
-                                break;
-                            }case 12:{
-                                valdi = true;
-                                apus();
-                                break;
-                            }case 13:{
-                                valdi = true;
-                                return;
-                            }default:{
-                                cout<<"Opsi tidak valid"<<endl;
-                                break;
-                            }
-                        }
-                    }
             }
         }
     }
-
 }
+
+
+
 
 int main(){
     int n;
