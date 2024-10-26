@@ -59,7 +59,7 @@ void irt(siswa& sis) {
     }
 }
 
-void impor() {
+void eksport() {
     ofstream file("file.txt");
     if (file.is_open()) {
         for (const auto& d : data) {
@@ -81,7 +81,7 @@ void impor() {
 }
 
 
-void expor() {
+void impor() {
     ifstream file("file.txt");
     if (file.is_open()) {
         string line;
@@ -133,7 +133,6 @@ void expor() {
     }
 }
 
-
 bool cekNRP(ll np) {
     for (const auto& d : data) {
         if (d.NRP == np) {
@@ -141,6 +140,13 @@ bool cekNRP(ll np) {
         }
     }
     return true;
+}
+
+bool compare(const siswa& a, const siswa& b){
+    if(a.Kampus == b.Kampus){
+        return a.Lulus>b.Lulus;
+    }
+    return a.Kampus<b.Kampus;
 }
 void masuk(){
     for(auto& d : data){
@@ -324,7 +330,7 @@ void apus() {
     for(auto& d : data) {
         d.display();
     }
-
+    
     string nama;
     ll nrp;
     int n;
@@ -366,10 +372,8 @@ void apus() {
 }
 
 
-
-
 int main(){
-    expor();
+    impor();
     int n;
     bool valid=false;
     while(true){
@@ -379,21 +383,24 @@ int main(){
         if(n==1){
             valid = true;
             masuk();
-            impor();
+            sort(data.begin(), data.end(), compare);
+            eksport();
             for(auto& d : data){
                 d.display();
             }
         }else if(n==2){
             valid = true;
             modifikasi();
-            impor();
+            sort(data.begin(), data.end(), compare);
+            eksport();
             for(auto& d : data){
                 d.display();
             }
         }else if(n==3){
             valid = true;
             apus();
-            impor();
+            sort(data.begin(), data.end(), compare);
+            eksport();
             for(auto& d : data){
                 d.display();
             }
@@ -406,6 +413,7 @@ int main(){
     }
 
     cout<<"data akhir :"<<endl;
+    sort(data.begin(), data.end(), compare);
     for(auto& d : data){
         d.display();
     }
